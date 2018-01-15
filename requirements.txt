@@ -1,0 +1,9 @@
+Flask
+Flask-Script
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Classy
+Flask_Redis
+mockredispy
+gunicorn
+pymysql
