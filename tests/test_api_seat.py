@@ -10,7 +10,7 @@ pid = 1
 sid_list = [1, 2]
 sid = ','.join([str(i) for i in sid_list])
 price = 5000
-orderno = 'wepiao-%s-%s' % (pid, sid)
+orderno = 'test-%s-%s' % (pid, sid)
 
 
 class TestApiSeat(FlaskTestBase):
@@ -37,7 +37,7 @@ class TestApiSeat(FlaskTestBase):
         # 确定重复锁座失败
         data = self.get_json('seat/lock/',
                                   method='POST',
-                                  orderno='wepiao-%s-%s' % (pid, sid),
+                                  orderno='test-%s-%s' % (pid, sid),
                                   pid=pid,
                                   price=price,
                                   sid=sid)
@@ -54,7 +54,7 @@ class TestApiSeat(FlaskTestBase):
         self.assertEqual(rv['data']['locked_seats_num'], seats_num)
         rv = self.get_succ_json('seat/unlock/',
                            method='POST',
-                           orderno='wepiao-%s-%s' % (pid, sid),
+                           orderno='test-%s-%s' % (pid, sid),
                            pid=pid,
                            sid=sid)
         self.assertEqual(rv['data']['unlocked_seats_num'], seats_num)

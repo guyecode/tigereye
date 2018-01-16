@@ -9,6 +9,7 @@ from flask_redis import FlaskRedis
 from tigereye import extensions
 from tigereye.extensions import db, MockRedisWrapper
 from tigereye.models import JSONEncoder
+from tigereye.api import ApiView
 
 
 def create_app(config=None):
@@ -27,7 +28,7 @@ def create_app(config=None):
             app.config['EMAIL_HOST'],
             app.config['SERVER_EMAIL'],
             app.config['ADMINS'],
-            'GROCER ALERT',
+            'TIGEREYE ALERT',
             credentials=(app.config['EMAIL_HOST_USER'],
                          app.config['EMAIL_HOST_PASSWORD']))
         mail_handler.setLevel(logging.ERROR)
@@ -72,10 +73,6 @@ def configure_views(app):
     from tigereye.api.seat import SeatView
     from tigereye.api.movie import MovieView
     from tigereye.api.order import OrderView
-    MiscView.register(app)
-    CinemaView.register(app)
-    HallView.register(app)
-    PlayView.register(app)
-    SeatView.register(app)
-    MovieView.register(app)
-    OrderView.register(app)
+    for view in locals().values():
+        if type(view) == type and issubclass(view, ApiView):
+            view.register(app)

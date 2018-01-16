@@ -4,6 +4,7 @@ from sqlalchemy import inspect
 from tigereye.extensions import db
 from tigereye.helper.wetime import default_datetime_format, default_date_format
 
+__all__ = ['cinema.Cinema']
 
 class Model(object):
     @classmethod
