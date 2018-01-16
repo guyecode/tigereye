@@ -53,7 +53,7 @@ class Model(object):
         return _d
 
     def __repr__(self):
-        return '<%s %s> ' % \
+        return '####<%s %s> ' % \
             (self.__class__.__name__, self.__mapper__.primary_key[0].name)
 
     def __len__(self):

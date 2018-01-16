@@ -56,7 +56,7 @@ class DefaultConfig(object):
     # MAIL_PASSWORD = ""
     # MAIL_DEFAULT_SENDER = ("Default Sender", "noreply@example.org")
     # # Where to logger should send the emails to
-    ADMINS = ["guye@wepiao.com"]
+    ADMINS = ["guye@qq.com"]
 
     # Flask-Redis
     # REDIS_ENABLED = False
