@@ -4,7 +4,7 @@ from flask import json
 from tigereye.helper.code import Code
 from tigereye.models.order import Order
 from tigereye.models.seat import SeatStatus
-from helper import FlaskTestBase
+from .helper import FlaskTestBase
 
 pid = 1
 sid_list = [1, 2]

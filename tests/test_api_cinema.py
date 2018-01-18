@@ -1,6 +1,6 @@
 
 from flask import json
-from helper import FlaskTestBase
+from .helper import FlaskTestBase
 
 
 class TestApiCinema(FlaskTestBase):

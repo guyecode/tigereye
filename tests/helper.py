@@ -1,4 +1,4 @@
-from urllib import urlencode
+from urllib.parse import urlencode
 from unittest import TestCase
 from flask import json
 import tigereye
@@ -23,7 +23,7 @@ class FlaskTestBase(TestCase):
             from tigereye.models.seat import PlaySeat  # noqa
             from tigereye.models.order import Order  # noqa
             db.create_all()
-            Cinema.create_test_data()
+            Cinema.create_test_data(cinema_num=1, hall_num=3, play_num=3)
             Movie.create_test_data()
 
     def assert_get(self, uri, assert_code, method='GET', **params):

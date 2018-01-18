@@ -1,7 +1,7 @@
 #coding=utf-8
 
 from flask import json
-from helper import FlaskTestBase
+from .helper import FlaskTestBase
 
 
 class TestApiPlay(FlaskTestBase):
