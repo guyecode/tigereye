@@ -1,6 +1,10 @@
 # coding=utf-8
-
+import time
+import random
+import math
+from datetime import datetime
 from flask import current_app
+from faker import Faker
 from tigereye.extensions import db
 from tigereye.models import Model
 
@@ -19,65 +23,81 @@ class Cinema(db.Model, Model):
                        index=True)
 
     @classmethod
-    def create_test_data(cls, cinema_num=2, hall_num=2, play_num=2):
-        from datetime import datetime
+    def create_test_data(cls, cinema_num=10, hall_num=10, play_num=10):
+        HALL_SEATS_NUM = 25
+        start_time = time.time()
         from tigereye.models.hall import Hall
+        from tigereye.models.movie import Movie
         from tigereye.models.play import Play
-        from tigereye.models.seat import Seat, PlaySeat, SeatType
-        from random import choice
+        from tigereye.models.seat import Seat, PlaySeat
+        from tigereye.models.order import Order
+        f = Faker('zh_CN')
         screen_types = ['普通', 'IMAX']
         audio_types = ['普通', '杜比环绕']
+        cinemas = []
         for i in range(1, cinema_num + 1):
             cinema = Cinema()
             cinema.cid = i
-            cinema.name = 'cinema%s' % i
-            cinema.address = '北京市朝阳区XX街%s号' % i
-            cinema.halls = hall_num
+            cinema.name = '%s影城' % f.name()
+            cinema.address = f.address()
             cinema.status = 1
-            cinema.save()
+            cinema.put()
+            cinemas.append(cinema)
+        Cinema.commit()
+
+        halls = []
+        plays = []
+        seats = []
+        for cinema in cinemas:
             for n in range(1, hall_num + 1):
                 hall = Hall()
                 hall.cid = cinema.cid
                 hall.name = '%s号厅' % n
-                hall.screen_type = choice(screen_types)
-                hall.audio_type = choice(audio_types)
-                hall.seats_num = 25
-                hall.seats = ','.join([str(s) for s in range(hall.seats_num)])
+                hall.screen_type = random.choice(screen_types)
+                hall.audio_type = random.choice(audio_types)
+                hall.seats_num = HALL_SEATS_NUM
                 hall.status = 1
-                hall.save()
-                for s in range(1, hall.seats_num + 1):
-                    seat = Seat()
-                    seat.cid = cinema.cid
-                    seat.hid = hall.hid
-                    seat.x = s % 5 or 5
-                    seat.y = s / 5 + 1
-                    seat.row = seat.y
-                    seat.column = seat.x
-                    seat.seat_type = SeatType.single.value
-                    seat.put()
-                Seat.commit()
-                for p in range(1, play_num + 1):
-                    play = Play()
-                    # play.pid = hall.hid * play_num + p
-                    play.cid = cinema.cid
-                    play.hid = hall.hid
-                    play.mid = p
-                    play.start_time = datetime.now()
-                    play.end_time = datetime.now()
-                    play.price_type = 1
-                    play.price = 7000
-                    play.market_price = 5000
-                    play.lowest_price = 3000
-                    play.seat_available_num = hall.seats_num
-                    play.allow_book = 1
-                    play.last_updated = datetime.now()
-                    play.status = 1
-                    play.save()
-                    seats = Seat.getby_hid(play.hid)
-                    for seat in seats:
-                        ps = PlaySeat()
-                        ps.pid = play.pid
-                        ps.copy(seat)
-                        ps.put()
-                    PlaySeat.commit()
-        current_app.logger.info('cinema test data done!')
+                hall.put()
+                halls.append(hall)
+            Hall.commit()
+
+        for hall in halls:
+            hall.seats = []
+            for s in range(1, hall.seats_num + 1):
+                seat = Seat()
+                seat.cid = cinema.cid
+                seat.hid = hall.hid
+                seat.x = s % 5 or 5
+                seat.y = math.ceil(s / 5)
+                seat.row = seat.x
+                seat.column = seat.y
+                seat.seat_type = 1
+                seat.put()
+                hall.seats.append(seat)
+            Seat.commit()
+
+            for p in range(1, play_num + 1):
+                play = Play()
+                play.cid = cinema.cid
+                play.hid = hall.hid
+                play.mid = p
+                play.start_time = datetime.now()
+                play.duration = 3600
+                play.price_type = 1
+                play.price = 7000
+                play.market_price = 5000
+                play.lowest_price = 3000
+                play.status = 1
+                play.put()
+                play.hall = hall
+                plays.append(play)
+            Play.commit()
+
+        for play in plays:
+            for seat in play.hall.seats:
+                ps = PlaySeat()
+                ps.pid = play.pid
+                ps.copy(seat)
+                ps.put()
+            PlaySeat.commit()
+        current_app.logger.info('create test data done! cost %.2f seconds' % (time.time() - start_time))
