@@ -7,3 +7,5 @@ Flask_Redis
 mockredispy
 gunicorn
 pymysql
+flask-debugtoolbar
+faker
